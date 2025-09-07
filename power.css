@@ -1,0 +1,228 @@
+
+
+* {
+    transition: 0.2s;
+  }
+
+  
+  .power * {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .power .button {
+    border-radius: 20px;
+    background: rgba(41, 41, 41, 0.8);
+    outline: none;
+  }
+  
+  
+  .power .button  .button-confirmtext {
+    font-size: 0px;
+    color: transparent;
+    margin: 0 0 0 0;
+  }
+  
+  .power .button .button-icon {
+    font-size: 50px;
+  }
+  
+  .power .button:hover {
+    background: rgba(51, 51, 51, 0.8);
+  }
+  
+  .power .button:active {
+    background: rgba(61, 61, 61, 0.8);
+  }
+  
+  .power .button.confirm  .button-confirmtext {
+    font-size: 18px;
+    color: white;
+    margin: 0 0 8px 0;
+  }
+  
+  .power .button.confirm .button-icon {
+    font-size: 40px;
+  }
+  
+  
+  /* SHUTDOWN */
+  
+  .power .shutdown label {
+    color: rgba(255,90,100,1.0);
+  }
+  
+  .power .shutdown.confirm {
+    background: rgba(235,70,80,1.0);
+  }
+  
+  .power .shutdown.confirm:hover {
+    background: rgba(245,80,90,1.0);
+  }
+  
+  .power .shutdown.confirm:active {
+    background: rgba(255,90,100,1.0);
+  }
+  
+  .power .shutdown.confirm label {
+    color: white;
+  }
+  
+  
+  
+  /* REBOOT */
+  
+  .power .reboot label {
+    color: rgba(240,240,90,1.0);
+  }
+  
+  .power .reboot.confirm {
+    background: rgba(220,220,70,1.0);
+  }
+  
+  .power .reboot.confirm:hover {
+    background: rgba(230,230,80,1.0);
+  }
+  
+  .power .reboot.confirm:active {
+    background: rgba(240,240,90,1.0);
+  }
+  
+  .power .reboot.confirm label {
+    color: white;
+  }
+  
+  /* LOGOUT */
+  
+  .power .logout label {
+    color: rgba(100,250,110,1.0);
+  }
+  
+  .power .logout.confirm {
+    background: rgba(80,230,90,1.0);
+  }
+  
+  .power .logout.confirm:hover {
+    background: rgba(90,240,100,1.0);
+  }
+  
+  .power .logout.confirm:active {
+    background: rgba(100,250,110,1.0);
+  }
+  
+  .power .logout.confirm label {
+    color: white;
+  }
+  
+  /* WINDOWS */
+  
+  .power .windows label {
+    color: rgba(70,140,250,1.0);
+  }
+  
+  .power .windows .button-icon {
+    margin: 0 0px 0 -12px;
+  }
+  
+  .power .windows.confirm {
+    background: rgba(50,120,230,1.0);
+  }
+  
+  .power .windows.confirm:hover {
+    background: rgba(60,130,240,1.0);
+  }
+  
+  .power .windows.confirm:active {
+    background: rgba(70,140,250,1.0);
+  }
+  
+  .power .windows.confirm label {
+    color: white;
+  }
+  
+  
+  .power .button-overlay {
+    background: linear-gradient(0deg, rgba(255,255,255,0.2) 0%, transparent 0%);
+    border-radius: 20px;
+    opacity: 1;
+    transition: 0.2s;
+  }
+  
+  .power .confirm:active .button-overlay {
+    transition: 0s;
+    animation: hold 1s forwards;
+  }
+  
+  .power .confirmed .button-overlay  {
+    animation: none;
+    background: linear-gradient(0deg, rgba(255,255,255,0.4) 100%, transparent 0%);
+  }
+  
+  .power .confirmed:active .button-overlay  {
+    animation: none;
+    background: linear-gradient(0deg, rgba(255,255,255,0.4) 100%, transparent 0%);
+  }
+  
+  @keyframes hold {
+    0% {
+      background: linear-gradient(0deg, rgba(255,255,255,0.2) 0%, transparent 0%);
+    }
+    95% {
+      background: linear-gradient(0deg, rgba(255,255,255,0.2) 100%, transparent 0%);
+    }
+    100% {
+        background: linear-gradient(0deg, rgba(255,255,255,0.4) 100%, transparent 0%);
+    }
+  }
+
+
+  .battery * {
+    margin: 0;
+    padding: 0;
+  }
+  
+  
+  .batterybody {
+    padding: 30px 16px;
+    /*background: linear-gradient(0deg #FF842E 25%, transparent 0%);*/
+    border-radius:10px;
+    border: 8px solid white;
+    transition: 0;
+  }
+  
+  .batterybody label {
+    font-size: 50px;
+    color: transparent;
+    margin: 0 3px 0 -3px;
+  }
+  
+  .batterybody.charging label {
+    font-size: 50px;
+    color: gold;
+    margin: 0 3px 0 -3px;
+  }
+  
+  .batterytip {
+    background: white;
+    padding: 5px 15px;
+    border-radius: 5px 5px 0 0;
+  }
+  
+  .battery-percentage {
+    font-size: 45px;
+    font-weight: 500;
+    margin: 0 10px 0 10px;
+  }
+  
+  .battery .uptimebox {
+    min-width: 140px;
+    margin: 0 -30px 0 00px;
+  }
+  
+  .battery-uptime-title {
+    font-weight: 200;
+  }
+  
+  .battery-uptime {
+    font-size: 20px;
+  }

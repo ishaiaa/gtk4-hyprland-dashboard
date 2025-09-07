@@ -1,0 +1,60 @@
+.calendar .view {
+    border-radius:20px;
+    background-color: rgba(41, 41, 41, 0.8);
+}
+ 
+.calendar {
+    border-radius: 20px;
+    background-color: transparent;
+ 
+}
+ 
+.calendar .day-name {
+    background-color: rgba(60,60,60,1.0);
+    border-radius: 20px;
+    margin:4px;
+}
+ 
+.calendar .day-number:focus {
+    background-color: rgba(166, 0, 144, 0.25);
+    border-radius: 20px;
+    margin:4px;
+    outline: none;
+    border: none;
+}
+ 
+.calendar .day-number:selected {
+    background-color: rgba(166, 0, 144, 0.5);
+    border-radius: 20px;
+    margin:4px;
+    outline: none;
+    border: none;
+}
+ 
+.calendar .other-month {
+    opacity: 0.3;
+}
+ 
+.calendar .today {
+    color: pink;
+    border-radius: 20px;
+    margin:4px;
+}
+ 
+ 
+.calendar .image-button:hover, .calendar .image-button:active {
+   background: rgba(255,255,255,0.1);
+   border-radius: 10px;
+}
+ 
+.calendar header {
+    font-size: 40px;
+    margin: -1px -1px 2px -1px;
+    padding: 10px 10px;
+    border-radius: 15px 15px 0 0;
+    background-color: rgba(166, 0, 144, 0.5);
+}
+ 
+.calendar header * {
+   font-size: 20px;
+}
