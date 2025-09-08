@@ -44,5 +44,5 @@ label {
 }
 
 .tile-bg {
-    background: linear-gradient(180deg,rgba(61, 61, 61, 0.8), rgba(41, 41, 41, 0.8)) ;
+    background: linear-gradient(180deg,rgba(61, 61, 61, 0.5), rgba(41, 41, 41, 0.5)) ;
 }

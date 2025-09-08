@@ -1,60 +1,87 @@
-.calendar .view {
-    border-radius:20px;
-    background-color: rgba(41, 41, 41, 0.8);
-}
- 
-.calendar {
-    border-radius: 20px;
-    background-color: transparent;
- 
-}
- 
-.calendar .day-name {
-    background-color: rgba(60,60,60,1.0);
-    border-radius: 20px;
-    margin:4px;
-}
- 
-.calendar .day-number:focus {
-    background-color: rgba(166, 0, 144, 0.25);
-    border-radius: 20px;
-    margin:4px;
+
+.calendar * {
     outline: none;
     border: none;
-}
- 
-.calendar .day-number:selected {
-    background-color: rgba(166, 0, 144, 0.5);
-    border-radius: 20px;
-    margin:4px;
-    outline: none;
-    border: none;
-}
- 
-.calendar .other-month {
-    opacity: 0.3;
-}
- 
-.calendar .today {
-    color: pink;
-    border-radius: 20px;
-    margin:4px;
-}
- 
- 
-.calendar .image-button:hover, .calendar .image-button:active {
-   background: rgba(255,255,255,0.1);
-   border-radius: 10px;
-}
- 
-.calendar header {
-    font-size: 40px;
-    margin: -1px -1px 2px -1px;
-    padding: 10px 10px;
-    border-radius: 15px 15px 0 0;
-    background-color: rgba(166, 0, 144, 0.5);
-}
- 
-.calendar header * {
-   font-size: 20px;
-}
+  }
+  
+  .calendar .view {
+      border-radius:20px;
+      background-color: rgba(41, 41, 41, 0.8);
+  }
+   
+  .calendar {
+      border-radius: 20px;
+      background-color: transparent;
+   
+  }
+   
+  .calendar .day-name {
+      background-color: rgba(60,60,60,1.0);
+      border-radius: 20px;
+      margin:4px;
+  }
+   
+  
+  
+  .calendar .day-number:focus {
+      background-color: rgba(250, 200, 220, 0.25);
+      border-radius: 20px;
+      margin:4px;
+      outline: none;
+      border: none;
+  }
+   
+  .calendar .day-number:selected {
+      background-color: rgba(250, 200, 220, 0.8);
+      border-radius: 20px;
+      margin:4px;
+      outline: none;
+      color: black;
+      border: none;
+  }
+   
+  
+  
+  .calendar .other-month {
+      opacity: 0.3;
+  }
+   
+  .calendar .today {
+      color: rgba(250, 200, 220, 0.8);
+      box-shadow: none;
+   
+  }
+  
+  
+  .calendar .day-number {
+    box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.25);
+  }
+  
+  .calendar .today:selected {
+      color: black;
+  }
+   
+   
+  .calendar .image-button:hover, .calendar .image-button:active {
+     background: rgba(255,255,255,0.1);
+     border-radius: 10px;
+  }
+   
+  .calendar header {
+      font-size: 40px;
+      margin: -1px -1px 2px -1px;
+      padding: 10px 10px;
+      border-radius: 15px 15px 0 0;
+      background: linear-gradient(30deg, rgba(250, 200, 222, 0.9), rgba(250, 160, 189, 0.9));
+  }
+   
+  .calendar header * {
+     font-size: 30px;
+     color: black;
+     font-weight: 300;
+  }
+
+
+  .calendar {
+    background: none;
+  }

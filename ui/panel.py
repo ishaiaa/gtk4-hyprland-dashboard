@@ -1,5 +1,5 @@
 from gi.repository import Gtk, Gtk4LayerShell, Gdk
-from ui.widgets import Calendar, Clock, Power
+from ui.widgets import Calendar, Clock, Power, Weather, Perf
 from .utils import make_tile
 
 
@@ -16,12 +16,12 @@ class OverlayPanel(Gtk.ApplicationWindow):
         grid = Gtk.Grid()
         grid.set_row_homogeneous(True)
         grid.set_column_homogeneous(True)
-        grid.set_row_spacing(40)
-        grid.set_column_spacing(40)
-        grid.set_margin_top(40)
-        grid.set_margin_bottom(40)
-        grid.set_margin_start(40)
-        grid.set_margin_end(40)
+        grid.set_row_spacing(30)
+        grid.set_column_spacing(30)
+        grid.set_margin_top(30)
+        grid.set_margin_bottom(30)
+        grid.set_margin_start(30)
+        grid.set_margin_end(30)
         self.set_child(grid)
 
         key_controller = Gtk.EventControllerKey()
@@ -34,7 +34,7 @@ class OverlayPanel(Gtk.ApplicationWindow):
 
         # tiles
         grid.attach(Clock(), 0, 0, 1, 2)
-        grid.attach(make_tile("Forecast"), 0, 2, 1, 2)
+        grid.attach(Weather(), 0, 2, 1, 2)
         grid.attach(Calendar(), 0, 4, 1, 4)
         grid.attach(Power(), 0, 8, 1, 2)
         grid.attach(make_tile("Music Player"), 1, 0, 1, 4)
@@ -42,8 +42,8 @@ class OverlayPanel(Gtk.ApplicationWindow):
         # grid.attach(make_tile("Settings Icons"), 1, 9, 1, 1)
         grid.attach(make_tile("Workspaces"), 2, 0, 2, 2)
         grid.attach(make_tile("AppLauncher"), 2, 2, 2, 8)
-        # grid.attach(make_tile("Pinned Apps"), 2, 8, 2, 2)
-        grid.attach(make_tile("Perf Monitor"), 4, 0, 1, 4)
+        # grid.attach(make_tile("Pinned Apps"), 2, 8, 2, 2 nb nvvvvnn)
+        grid.attach(Perf(), 4, 0, 1, 4)
         grid.attach(make_tile("Processes"), 4, 4, 1, 6)
         grid.attach(make_tile("Notifications"), 5, 0, 1, 10)
 
