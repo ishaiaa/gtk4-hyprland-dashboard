@@ -85,7 +85,7 @@ class Battery(Tile):
         mainbox.append(uptimebox)
         
         self.modify_battery()
-        GLib.timeout_add(1000, self.modify_battery)  # ~60 FPS
+        GLib.timeout_add(10000, self.modify_battery)  # ~60 FPS
 
         
         self.append(mainbox)

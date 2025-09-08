@@ -1,0 +1,44 @@
+.clock * {
+    margin: 0;
+    padding: 0;
+    font-family: ;
+  }
+  
+  .clock .time-box {
+    margin: -25px 0 0 0 ;
+  }
+  
+  .clock .time-box * {
+    font-size: 150px;
+    font-weight: 1000;
+  }
+  
+  .clock .time-hours {
+    color: rgba(250,200,250,0.8);
+  }
+  
+  .clock .time-separator {
+    color: rgba(230,200,230,0.2);
+    font-weight: 600;
+    margin: 0 3px 0 -5px;
+  }
+  
+  .clock .time-minutes {
+    color: rgba(250,200,220,0.8);
+  }
+  
+  .clock .date-box * {
+    font-size: 32px;
+    margin: -20px 0 20px 0;
+    font-weight: 300;
+  }
+  
+  .clock .day {
+    color: rgba(230,160,200, 1.0);
+  }
+  
+  .clock .date {
+    opacity: 0.7;
+  }
+  
+  .
