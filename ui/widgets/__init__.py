@@ -4,3 +4,4 @@ from .clock import Clock
 from .powersettings import Power
 from .weather import Weather
 from .perf import Perf
+from .processmonitor import ProcessMonitor

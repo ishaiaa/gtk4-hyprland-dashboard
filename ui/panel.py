@@ -1,6 +1,6 @@
 from gi.repository import Gtk, Gtk4LayerShell, Gdk
-from ui.widgets import Calendar, Clock, Power, Weather, Perf
-from .utils import make_tile
+from ui.widgets import Calendar, Clock, Power, Weather, Perf, ProcessMonitor
+from .utils import make_tile, global_click_manager
 
 
 import sys
@@ -44,7 +44,7 @@ class OverlayPanel(Gtk.ApplicationWindow):
         grid.attach(make_tile("AppLauncher"), 2, 2, 2, 8)
         # grid.attach(make_tile("Pinned Apps"), 2, 8, 2, 2 nb nvvvvnn)
         grid.attach(Perf(), 4, 0, 1, 4)
-        grid.attach(make_tile("Processes"), 4, 4, 1, 6)
+        grid.attach(ProcessMonitor(), 4, 4, 1, 6)
         grid.attach(make_tile("Notifications"), 5, 0, 1, 10)
 
         self.connect("realize", self.on_realize)
@@ -69,4 +69,4 @@ class OverlayPanel(Gtk.ApplicationWindow):
         return False
 
     def on_click(self, controller, n_press, x, y):
-        print("Click at:", x, y)
+        pass

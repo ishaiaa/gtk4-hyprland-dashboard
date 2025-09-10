@@ -106,7 +106,7 @@ class Weather(Tile):
         
     def update_weather(self):
         url = f'https://api.open-meteo.com/v1/forecast?latitude={self.coords[0]}&longitude={self.coords[1]}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max&current=temperature_2m,weather_code&timezone=Europe%2FBerlin'
-        # url = f'https://nope.nope'
+        url = f'https://nope.nope'
         
         try:
             response = requests.get(url)
