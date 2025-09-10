@@ -69,4 +69,4 @@ class OverlayPanel(Gtk.ApplicationWindow):
         return False
 
     def on_click(self, controller, n_press, x, y):
-        pass
+        global_click_manager.call_callback("process-deselect-detect-parent", x, y)

@@ -2,16 +2,26 @@ import os
 import time
 import psutil 
 import pynvml
+import threading
 
 from gi.repository import Gio, Gtk, Gdk, GLib, GdkPixbuf, Pango
 from .tile import Tile
 from ..utils import global_click_manager, get_hyprland_programs
 
+"""
+To anyone reading this: 
+Yes, i know i should've split this into separate files/classes 
+and yes, i know this is unreadable. But when i realized how bad 
+it actually is, it was already too late, 
+and i lack the willpower to refactor this xD 
+"""
+
 class ProcessMonitor(Tile):
     def __init__(self):
         super().__init__("process-monitor", "Process Monitor")
         global_click_manager.create_callback("process-deselect-detect")
-        
+        global_click_manager.create_callback("process-deselect-detect-parent")
+        global_click_manager.attach_to_callback("process-deselect-detect-parent", self.deselect_handler)
         self.header_box = Gtk.Box(
                 orientation=Gtk.Orientation.HORIZONTAL,
                 hexpand=True,
@@ -21,11 +31,8 @@ class ProcessMonitor(Tile):
         
         self.title = Gtk.Label(css_classes=["title"], label="User Processes")
         spacer = Gtk.Box(hexpand=True)        
-        self.mode_toggle = Gtk.Switch(css_classes=["mode-toggle"])
         
         self.header_box.append(self.title)
-        self.header_box.append(spacer)
-        self.header_box.append(self.mode_toggle)
         
         self.scroll_window = Gtk.ScrolledWindow(overlay_scrolling=True,kinetic_scrolling=True, valign=Gtk.Align.FILL, vexpand=True, hexpand=True, css_classes=["scroll-window"])
         self.scroll_box = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE,vexpand=True, hexpand=True, css_classes=["scroll-box"])
@@ -34,10 +41,21 @@ class ProcessMonitor(Tile):
         self.process_widgets = {}
         
         self.update_process_list()
-        GLib.timeout_add_seconds(3, self.update_process_list)
+        GLib.timeout_add_seconds(1, self.timeout_callback)
         
         self.append(self.header_box)
         self.append(self.scroll_window)
+        
+        
+    def timeout_callback(self):
+        # Start the worker thread
+        threading.Thread(target=self.update_process_list, daemon=True).start()
+        return True
+    
+    def deselect_handler(self, x, y):
+        alloc = self.get_allocation()
+        if not (alloc.x <= x <= alloc.x + alloc.width and alloc.y <= y <= alloc.y + alloc.height):
+            global_click_manager.call_callback("process-deselect-detect")
 
     def update_process_list(self):
         new_procs = get_hyprland_programs()  # your function
@@ -54,14 +72,15 @@ class ProcessMonitor(Tile):
         # 2️⃣ Remove processes that disappeared
         for pid in old_pids - new_pids:
             widget = self.process_widgets[pid]
-            self.scroll_box.remove(widget)       # remove from ListBox
+            widget.unparent()     # remove from ListBox
             del self.process_widgets[pid]
 
         # 3️⃣ Optional: update existing widgets if info changed
         for pid in old_pids & new_pids:
             info = new_procs[pid]
             widget = self.process_widgets[pid]
-            widget.update_data(info)
+            stats = widget.get_process_stats(pid)
+            GLib.idle_add(widget.update_data, info, stats)
                 
         return True
                 
@@ -80,6 +99,9 @@ class ProcessMonitor(Tile):
             self.name = name;
             self.title = title;
             self.process = process;
+            self.psutil_proc = psutil.Process(pid)
+            
+            self.old_disk_stats = 0
             
             self.display_box = Gtk.Box(
                 orientation=Gtk.Orientation.HORIZONTAL, 
@@ -204,9 +226,13 @@ class ProcessMonitor(Tile):
             self.uptime_util.append(self.uptime_util_name)
             
             self.term_button = Gtk.Button(hexpand=True,label="TERMINATE",css_classes=["button"])
+            self.term_button.connect("clicked", self.term_btn)
             self.kill_button = Gtk.Button(hexpand=True,label="KILL",css_classes=["button"])
+            self.kill_button.connect("clicked", self.kill_btn)
             self.copy_pid_button = Gtk.Button(hexpand=True,label="COPY PID",css_classes=["button"])
+            self.copy_pid_button.connect("clicked", self.copy_pid_btn)
             self.copy_path_button = Gtk.Button(hexpand=True,label="COPY PATH",css_classes=["button"])
+            self.copy_path_button.connect("clicked", self.copy_path_btn)
             
             self.menu_grid.attach(self.term_button,0,0,1,3)
             self.menu_grid.attach(self.kill_button,0,3,1,3)
@@ -227,6 +253,8 @@ class ProcessMonitor(Tile):
             self.append(self.display_box)
             self.append(self.revealer)
             
+            self.update_data()
+            
             self.gesture = Gtk.GestureClick.new()
             self.gesture.connect("pressed", self.on_box_click)
             self.add_controller(self.gesture)
@@ -242,18 +270,23 @@ class ProcessMonitor(Tile):
             self.revealer.set_reveal_child(False) 
 
                 
-        def update_data(self, data):
-            self.pid = data["pid"]
-            self.name = data["class"]
-            self.title = data["title"]
-            self.process = data["exe"]
+        def update_data(self, data=None, stats=None):
+            if(data):
+                old_name = self.name
+                self.name = data["class"]
+                
+                if(old_name != self.name):
+                    self.icon = self.get_app_icon(self.pid)
+                    
+                self.title = data["title"]
+                self.process = data["exe"]
             
-            stats = self.get_process_stats(self.pid)
-            print(stats)
+            if not stats:
+                print("Generating Stats On Main Thread...")
+                stats = self.get_process_stats(self.pid)
             
             self.process_name.set_text(f'{self.name} | {self.title}')
             self.process_path.set_text(self.process)
-            self.icon = self.get_app_icon(self.pid)
             
             self.cpu_util_value.set_text(f'{stats["cpu_percent"]}%')
             self.ram_util_value.set_text(f'{stats["ram_mb"]} MB')
@@ -261,20 +294,22 @@ class ProcessMonitor(Tile):
             self.ssd_util_value.set_text(f'{stats["disk_mb"]} MB/s')
             self.uptime_util_value.set_text(self.format_runtime(stats["runtime_sec"]))
             
-            print(f'Update {self.pid}')
             
         def get_process_stats(self, pid: int):
             stats = {}
 
             try:
-                proc = psutil.Process(pid)
+                stats["cpu_percent"] = round(self.psutil_proc.cpu_percent(None)/psutil.cpu_count(logical=True),1)
+                stats["ram_mb"] = round(self.psutil_proc.memory_info().rss  / (1024**2),1)
 
-                stats["cpu_percent"] = round(proc.cpu_percent(None),1)
-                stats["ram_mb"] = round(proc.memory_info().rss  / (1024**2),1)
-
-                io_counters = proc.io_counters()
-                stats["disk_mb"] = round((io_counters.read_bytes + io_counters.write_bytes) / (1024**2),1)
-                stats["runtime_sec"] = time.time() - proc.create_time()
+                io_counters = self.psutil_proc.io_counters()
+                
+                disk_mb = round((io_counters.read_bytes + io_counters.write_bytes) / (1024**2),1)
+                disk_delta = disk_mb - self.old_disk_stats
+                self.old_disk_stats = disk_mb
+                
+                stats["disk_mb"] = round(disk_delta,1)
+                stats["runtime_sec"] = time.time() - self.psutil_proc.create_time()
 
                 stats["gpu_percent"] = 0.0
 
@@ -337,3 +372,16 @@ class ProcessMonitor(Tile):
             img = Gtk.Image.new_from_icon_name("application-x-executable")
             img.set_pixel_size(size)
             return img
+        
+        def term_btn(self, *args):
+            self.psutil_proc.terminate()
+        def kill_btn(self, *args):
+            self.psutil_proc.kill()
+        def copy_pid_btn(self, *args):
+            clipboard = Gdk.Display.get_default().get_clipboard()
+            content_provider = Gdk.ContentProvider.new_for_value(f'{self.pid}')
+            clipboard.set_content(content_provider)
+        def copy_path_btn(self, *args):
+            clipboard = Gdk.Display.get_default().get_clipboard()
+            content_provider = Gdk.ContentProvider.new_for_value(f'{self.process}')
+            clipboard.set_content(content_provider)
