@@ -17,7 +17,6 @@ from ui.utils import load_css
 from ui.app import MyApp
 
 DEBUG = "--debug" in sys.argv
-sys.stderr = open(os.devnull, "w")
 
 # Load variables from .env
 
@@ -78,6 +77,7 @@ def main():
         load_css("./styles/processmonitor.css")
         load_css("./styles/windowfix.css")
         load_css("./styles/notifications-layer.css")
+        load_css("./styles/notifications.css")
 
         print(f'DBG: {DEBUG}')
         print(sys.argv)

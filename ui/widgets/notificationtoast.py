@@ -60,7 +60,7 @@ class NotificationToast(Gtk.Revealer):
                 lines=5,
                 hexpand=True,
                 halign=Gtk.Align.START, 
-                label=n_data["body"], 
+                label=n_data["body"].replace("\n", " "), 
                 # height_request=140, 
                 css_classes=["main-text"]
             )

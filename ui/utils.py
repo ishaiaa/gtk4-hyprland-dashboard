@@ -198,6 +198,25 @@ class NotificationDaemon(dbus.service.Object):
         # Notify subscribers
         for cb in list(self._callbacks):
             try:
+                if "image-data" in hints:
+                    img_struct = hints["image-data"]
+                    width, height, rowstride, has_alpha, bps, channels, data = img_struct
+                                
+                    pixel_bytes = GLib.Bytes(bytes(data))
+
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(
+                        pixel_bytes,
+                        GdkPixbuf.Colorspace.RGB,
+                        bool(has_alpha),
+                        bps,
+                        width,
+                        height,
+                        rowstride
+                    )
+
+                    gtk_image = Gtk.Image.new_from_pixbuf(pixbuf)
+                    gtk_image.add_css_class("image")
+                    notif["image"] = gtk_image
                 cb(notif)
             except Exception as e:
                 print(f"[NotificationDaemon] callback error: {e}")

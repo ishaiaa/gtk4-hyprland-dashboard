@@ -28,10 +28,6 @@ class NotificationsLayer(Gtk.Window):
         self.container.set_direction(Gtk.TextDirection.LTR)
         self.set_direction(Gtk.TextDirection.LTR)
         
-        
-        GLib.timeout_add(2000, self.notify)
-        GLib.timeout_add(4000, self.notify)
-        GLib.timeout_add(6000, self.notify)
         self.set_child(self.container)
 
         self.connect("realize", self.on_realize)
@@ -71,6 +67,6 @@ class NotificationsLayer(Gtk.Window):
         print(f'Adjust n {n}')
         surface = self.get_native().get_surface()
         region = cairo.Region(cairo.RectangleInt(0, 0, 0, 0))
-        if n != 0:
+        if n > 0:
             region.union(cairo.RectangleInt(0, 1440-(183*n), 480, 183*n))
         GLib.idle_add(surface.set_input_region, region)

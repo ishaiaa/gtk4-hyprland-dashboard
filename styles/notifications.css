@@ -1,0 +1,90 @@
+.notifications * {
+    transition: 0.2s;
+    border: none;
+    outline: none;
+  }
+  
+  .notifications .scroll-window {
+    background: transparent;
+  }
+  
+  .notifications .scroll-box {
+    background: transparent;
+    padding: 0 10px;
+  }
+  
+  .notifications .wrap-box {
+    min-height: 200px;
+  }
+  
+  .notifications .toast {
+    background: rgba(255,255,255,0.1);
+    margin: 10px 0;
+    border-radius: 20px;
+  }
+  
+  .notifications .toast:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  
+  .notifications .activatable:hover {
+    background: none;
+  }
+  
+  
+  .notifications .activatable:focus .toast {
+    background: rgba(255,255,255,0.15);
+  }
+  
+  .notifications .activatable:hover .toast:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  
+  .notifications .header {
+    background: rgba(255,255,255,0.05);
+  }
+  
+  .notifications .app-name {
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .notifications .close-button {
+    background: transparent;
+    padding: 0 10px;
+    outline: none;
+    border: none;
+  }
+  
+  .notifications .close-button:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  
+  
+  .notifications .close-button:active {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .notifications .image {
+    min-height: 130px;
+    min-width: 130px;
+    margin: 0 10px;
+    border-radius: 200px;
+  }
+  
+  .notifications .text-container {
+    padding: 10px 0;
+  }
+  
+  .notifications .summary {
+    font-weight: 800;
+    font-size: 16px;
+  }
+  
+  .notifications .main-text {
+    font-weight: 400;
+    font-size: 16px;
+  }
