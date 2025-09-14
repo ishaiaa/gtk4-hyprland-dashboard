@@ -99,10 +99,10 @@
     border-radius: 5px;
   }
   
-  .button:hover {
+  .process-monitor .button:hover {
     background: rgba(255,255,255,0.2);
   }
   
-  .button:active {
+  .process-monitor .button:active {
     background: rgba(255,255,255,0.3);
   }

@@ -5,3 +5,5 @@ from .powersettings import Power
 from .weather import Weather
 from .perf import Perf
 from .processmonitor import ProcessMonitor
+from .notifications import Notifications
+from .notificationtoast import NotificationToast

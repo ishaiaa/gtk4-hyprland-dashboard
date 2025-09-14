@@ -1,0 +1,10 @@
+window {
+    background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("./wallpaper-blur.png");
+    border-radius: 15px;
+    opacity: 1.0;
+    transition: 0.5s;
+}
+
+.window-hidden {
+    opacity: 0.0;
+}

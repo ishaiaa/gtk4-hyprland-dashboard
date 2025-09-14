@@ -24,7 +24,6 @@ class SmoothStat:
 class Perf(Tile):
     def __init__(self):
         super().__init__("perf", "Perf", False, True)
-        pynvml.nvmlInit()
         self.grid = Gtk.Grid()
         self.grid.set_row_homogeneous(True)
         self.grid.set_column_homogeneous(True)

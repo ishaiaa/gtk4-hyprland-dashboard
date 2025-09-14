@@ -1,10 +1,21 @@
 /* style.css */
 
 /* Main overlay window */
+/* {
+    transition: 0.2s;
+  } */
+
 window {
-    background-color: rgba(0, 0, 0, 0.6); /* semi-transparent */
-    border-radius: 15px;                     /* rounded corners */
+    background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("./wallpaper-blur.png");
+    border-radius: 15px;
+    opacity: 1.0;
+    transition: 2.6s;
 }
+
+.window-hidden {
+    opacity: 0.0;
+}
+
 
 /* Label text */
 label {

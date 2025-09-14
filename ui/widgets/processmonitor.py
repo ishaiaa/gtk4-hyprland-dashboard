@@ -6,7 +6,7 @@ import threading
 
 from gi.repository import Gio, Gtk, Gdk, GLib, GdkPixbuf, Pango
 from .tile import Tile
-from ..utils import global_click_manager, get_hyprland_programs
+from ..utils import global_click_manager, get_hyprland_programs, global_state
 
 """
 To anyone reading this: 
@@ -58,6 +58,8 @@ class ProcessMonitor(Tile):
             global_click_manager.call_callback("process-deselect-detect")
 
     def update_process_list(self):
+        if(not global_state.dashboard_visible):
+            return True
         new_procs = get_hyprland_programs()  # your function
         old_pids = set(self.process_widgets.keys())
         new_pids = set(new_procs.keys())

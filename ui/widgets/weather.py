@@ -6,6 +6,7 @@ import requests
 from datetime import datetime
 from gi.repository import Gtk, GdkPixbuf, GLib
 from .tile import Tile
+from ..utils import global_state
 
 WMO_TO_ICON = {
     # Clear sky
@@ -66,6 +67,9 @@ class Weather(Tile):
     def __init__(self):
         super().__init__("weather", "Weather")
         
+        self.update_interval = 300
+        self.ticks = 0
+        
         self.grid = Gtk.Grid()
         self.grid.set_row_homogeneous(True)
         self.grid.set_column_homogeneous(True)
@@ -101,12 +105,22 @@ class Weather(Tile):
         
         self.append(self.grid)
         
-        self.update_weather()
-        GLib.timeout_add_seconds(300, self.update_weather)
+        self.update_weather(force=True)
+        GLib.timeout_add_seconds(1, self.update_weather)
         
-    def update_weather(self):
-        url = f'https://api.open-meteo.com/v1/forecast?latitude={self.coords[0]}&longitude={self.coords[1]}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max&current=temperature_2m,weather_code&timezone=Europe%2FBerlin'
-        url = f'https://nope.nope'
+    def update_weather(self, force=False):
+        
+        self.ticks+=1
+        if (not force and self.ticks < self.update_interval):
+            return True
+        
+        if (not force and not global_state.dashboard_visible):
+            return True
+        
+        self.ticks = 0
+        
+        url = f'https://api.open-meteo.com/v1/forecast?latitude={self.coords[0]}&longitude={self.coords[1]}&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max&current=is_day,temperature_2m,weather_code&timezone=Europe%2FBerlin'
+        # url = f'https://nope.nope'
         
         try:
             response = requests.get(url)
@@ -124,12 +138,12 @@ class Weather(Tile):
                     weather_code = data["daily"]["weather_code"][i]
                     rain_prob = data["daily"]["precipitation_probability_max"][i]
                     
-                    self.days[i].update_icon(int(weather_code))
+                    self.days[i].update_icon(int(weather_code), 1)
                     self.days[i].set_temps(min=int(temp_min), max=int(temp_max))
                     self.days[i].set_day_short(time)
                     self.days[i].set_rain_chance(rain_prob)
                     
-                self.days[0].update_icon(int(weathercode_now))
+                self.days[0].update_icon(int(weathercode_now), data["current"]["is_day"])
                 self.days[0].set_temps(max=int(temp_now))
                 
             else:
@@ -225,8 +239,11 @@ class Weather(Tile):
             self.append(self.horizontal_box)
             self.append(self.temp_row)
             
-        def update_icon(self, code: int):
-            icon = f'../../weather-icons/{WMO_TO_ICON[code]}.svg'
+        def update_icon(self, code: int, is_day: int):
+            name_prefix = ""
+            if is_day == 0:
+                name_prefix = "nt_"
+            icon = f'../../weather-icons/{name_prefix}{WMO_TO_ICON[code]}.svg'
             here = os.path.dirname(os.path.abspath(__file__))
             icon_path = os.path.join(here, icon)
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon_path, self.icon_size, self.icon_size)

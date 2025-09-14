@@ -7,24 +7,24 @@
   opacity: 0.7;
 }
 
-.perf-name {
+.perf .perf-name {
   font-size: 25px;
   font-weight: 400;
   color: rgba(255,255,255,0.8);
 }
 
-.overlay-box {
+.perf .overlay-box {
   padding: 55px 0 0 0 ;
 }
 
 
-.stat1-value, .stat2-value {
+.perf .stat1-value, .perf .stat2-value {
   font-weight: 400;
   font-size: 30px;
   margin: -3px 0;
 }
 
-.stat1-name, .stat2-name {
+.perf .stat1-name, .perf .stat2-name {
   font-weight: 200;
   font-size: 20px;
   margin: -7px 0 7px;
