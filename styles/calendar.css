@@ -2,6 +2,7 @@
 .calendar * {
     outline: none;
     border: none;
+    transition: 0.2s;
   }
   
   .calendar .view {
