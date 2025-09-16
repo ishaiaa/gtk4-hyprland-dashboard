@@ -1,0 +1,84 @@
+.image-display * {
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    transition: 0.2s;
+  }
+  
+  .image-display .image-box{
+    border-radius:20px;
+    transition: 0.5s;
+    opacity: 1.0;
+  }
+  
+  .image-display .image-box.hidden {
+    opacity: 0.0;
+  }
+  
+  
+  /* FILE CHOOSER */
+  
+  .image-display .file-chooser-box {
+    
+  }
+  
+  .image-display .header {
+    padding: 4px;
+  }
+  
+  .image-display .header > * {
+    margin: 3px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  
+  .image-display .file-list {
+    background: transparent;
+    padding: 0 10px;
+  }
+  
+  .image-display .entry-box {
+    font-size: 15px;
+    padding: 2px 10px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 400;
+  }
+  
+  .image-display .cancel-button {
+    background: rgba(250,100,100, 0.8);
+  }
+  
+  .image-display .cancel-button:hover {
+    background: rgba(250,120,120, 0.9);
+  }
+  
+  .image-display .cancel-button:active {
+    background: rgba(250,140,140, 0.9);
+  }
+  
+  .image-display .cancel-button > label {
+    font-size: 15px;
+    padding: 2px 10px;
+  }
+  
+  .image-display .file-row {
+    padding: 2px;
+    border-radius: 10px;
+    margin: 5px 0;
+  }
+  
+  .image-display .file-icon {
+    min-height: 30px;
+    min-width: 30px;
+    border-radius: 10px;
+    margin-right: 10px;
+  }
+  .image-display .file-name {
+    color: rgba(255,255,255,0.8);
+    font-size: 15px;
+    font-family: monospace;
+  }
+  
+  

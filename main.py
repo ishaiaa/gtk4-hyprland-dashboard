@@ -79,6 +79,7 @@ def main():
         load_css("./styles/notifications-layer.css")
         load_css("./styles/notifications.css")
         load_css("./styles/workspaces.css")
+        load_css("./styles/imagedisplay.css")
 
         print(f'DBG: {DEBUG}')
         print(sys.argv)
