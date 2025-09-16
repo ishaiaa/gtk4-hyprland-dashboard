@@ -33,21 +33,13 @@ class NotificationsLayer(Gtk.Window):
         self.connect("realize", self.on_realize)
         
     def notify(self, notif):
-        notification = NotificationToast(notif, self.remove_child)
+        notification = NotificationToast(notif)
         self.childrencount += 1
         self.container.append(notification)
         # handler_id = notification.connect("notify::parent", self.on_child_parent_changed)
         # self.child_watchers[notification] = handler_id
-        self.adjust_region()
         GLib.idle_add(notification.reveal)
         
-        
-    def remove_child(self, timeout):
-        GLib.timeout_add(timeout, self.__remove_child)
-        
-    def __remove_child(self):
-        self.childrencount -= 1
-        self.adjust_region()
         
     def on_realize(self, *args):
         Gtk4LayerShell.init_for_window(self)
@@ -58,15 +50,12 @@ class NotificationsLayer(Gtk.Window):
             Gtk4LayerShell.set_anchor(self, edge, True)
         # Gtk4LayerShell.set_keyboard_mode(self, Gtk4LayerShell.KeyboardMode.ON_DEMAND)
         # Gtk4LayerShell.set_exclusive_zone(self, 0)
+        
         self.adjust_region()
         
         
         
     def adjust_region(self):
-        n = self.childrencount
-        print(f'Adjust n {n}')
         surface = self.get_native().get_surface()
         region = cairo.Region(cairo.RectangleInt(0, 0, 0, 0))
-        if n > 0:
-            region.union(cairo.RectangleInt(0, 1440-(183*n), 480, 183*n))
         GLib.idle_add(surface.set_input_region, region)

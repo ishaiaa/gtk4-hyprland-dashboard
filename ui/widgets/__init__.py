@@ -7,3 +7,4 @@ from .perf import Perf
 from .processmonitor import ProcessMonitor
 from .notifications import Notifications
 from .notificationtoast import NotificationToast
+from .workspaces import Workspaces

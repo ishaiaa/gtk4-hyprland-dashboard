@@ -1,0 +1,77 @@
+.workspaces * {
+    transition: 0.2s;
+  }
+  
+  .workspace-box {
+    border-radius:20px;
+  }
+  
+  .workspace-box .overlay {
+    background: rgba(0,0,0,0.1);
+    border-radius:20px;
+  }
+  
+  .workspace-box .overlay:hover {
+    background: rgba(255,255,255,0.01);
+    border-radius:20px;
+  }
+  
+  .workspace-box .icon { 
+    font-family: 'Font Awesome 7 Free', monospace;
+    color: rgba(255,255,255,0.3);
+    padding: 0 0 15px 0;
+    font-size: 60px;
+}
+  
+  .workspace-box .number {
+    font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    padding: 0 0 5px 0;
+  }
+  
+  
+  /* USED */
+  
+  .workspace-box.used .overlay {
+    background: linear-gradient(110deg, rgba(250, 250, 250, 0.1), rgba(250, 250, 250, 0.3));
+  }
+  
+  .workspace-box.used .overlay:hover {
+    background: linear-gradient(110deg, rgba(250, 250, 250, 0.2), rgba(250, 250, 250, 0.4));
+  }
+  
+  .workspace-box.used .icon { 
+    color: rgba(255,255,255,0.9);
+  }
+  
+  .workspace-box.used .number {
+    color: rgba(255,255,255,0.7);
+  }
+  
+  /* ACTIVE */
+  
+  .workspace-box.active .overlay {
+    background: linear-gradient(110deg, #fac8dee6, #faa0bde6);
+  }
+  
+  .workspace-box.active .overlay:hover {
+    background: linear-gradient(110deg, rgba(250, 200, 222, 1.0), rgba(250, 160, 189, 1.0));
+  }
+  
+  .workspace-box.active .icon { 
+    color: rgba(255,255,255,0.9);
+  }
+  
+  .workspace-box.active .number {
+    color: rgba(255,255,255,0.7);
+  }
+  
+
+
+  .workspace-3 .icon {
+    margin-left: -16px;
+  }
+  
+  .workspace-5 .icon {
+    margin-left: -16px;
+  }

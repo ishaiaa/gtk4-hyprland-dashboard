@@ -22,6 +22,13 @@
     margin: 10px 0;
     border-radius: 20px;
   }
+
+  .notifications .toast.hide {
+    background: rgba(255,255,255,0.1);
+    margin: 10px 0;
+    border-radius: 20px;
+    opacity: 0.0;
+  }
   
   .notifications .toast:hover {
     background: rgba(255,255,255,0.2);

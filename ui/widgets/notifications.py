@@ -83,11 +83,11 @@ class Notifications(Tile):
             
             pixbuf = GdkPixbuf.Pixbuf.new_from_file("/programming/gtk4-hyprland-dashboard/styles/notif-icon.png")
             self.image = Gtk.Image.new_from_pixbuf(pixbuf)
-            self.image.add_css_class("image")
             
             if "image" in n_data.keys():
-                self.image = n_data["image"]
+                self.image = Gtk.Image.new_from_pixbuf(n_data["image"])
                 
+            self.image.add_css_class("image")
     
             self.app_name = Gtk.Label(
                 wrap=True,

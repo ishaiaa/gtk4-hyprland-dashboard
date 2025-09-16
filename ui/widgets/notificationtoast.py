@@ -2,11 +2,10 @@ from gi.repository import Gtk, GLib, Pango
 from .tile import Tile
 
 class NotificationToast(Gtk.Revealer):
-    def __init__(self, notif_data, close_callback):
+    def __init__(self, notif_data):
         super().__init__(transition_type=Gtk.RevealerTransitionType.SLIDE_UP)
         # self.hreveal = Gtk.Revealer(transition_type=Gtk.RevealerTransitionType.SWING_RIGHT)
         self.set_reveal_child(False)
-        self.close_callback = close_callback
         self.discord = False
         self.toast = None
         if(notif_data["app"]!= "discord"):
@@ -39,7 +38,9 @@ class NotificationToast(Gtk.Revealer):
             )
             
             if "image" in n_data.keys():
-                self.append(n_data["image"])
+                image = Gtk.Image.new_from_pixbuf(n_data["image"])
+                image.add_css_class("image")
+                self.append(image)
                 
             self.summary_text = Gtk.Label(
                 wrap=True,
@@ -86,7 +87,8 @@ class NotificationToast(Gtk.Revealer):
             self.image_overlay = Gtk.Overlay(css_classes=["image-overlay"])
             self.bgbox = Gtk.Box(css_classes=["image-overlay-bgbox"])
             
-            self.image = n_data["image"]
+            self.image = Gtk.Image.new_from_pixbuf(n_data["image"])
+            self.image.add_css_class("image")
             
             self.image_overlay.set_child(self.bgbox)
             self.image_overlay.add_overlay(self.image)
@@ -143,12 +145,15 @@ class NotificationToast(Gtk.Revealer):
         
         
         
+    def self_destruct(self):
+        self.set_opacity(0)
+        self.get_parent().show()
+        self.unparent()
+        
     def close_popup(self, *args):
         self.toast.remove_css_class("shown")
         self.toast.add_css_class("hide")
-        if(self.close_callback):
-            self.close_callback(500)
-        self.close_callback = None
+        GLib.timeout_add(400, self.toast.add_css_class, "hiding")
         GLib.timeout_add(400, self.set_reveal_child, False)
-        GLib.timeout_add(600, self.unparent)
+        GLib.timeout_add(650, self.self_destruct)
         
