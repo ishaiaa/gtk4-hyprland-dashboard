@@ -1,5 +1,5 @@
 import gi, time
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk, GLib, Gdk
 from .tile import Tile
 from .battery import Battery
 
@@ -29,7 +29,9 @@ class Power(Tile):
         
     class ConfirmButton(Gtk.Frame):
         def __init__(self, type: str, icon_glyph: str, callback):
-            super().__init__()
+            super().__init__(
+                cursor=Gdk.Cursor.new_from_name("pointer"),
+            )
             self.set_hexpand(True)
             self.set_vexpand(True)
             

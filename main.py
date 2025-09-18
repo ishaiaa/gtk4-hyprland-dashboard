@@ -80,6 +80,7 @@ def main():
         load_css("./styles/notifications.css")
         load_css("./styles/workspaces.css")
         load_css("./styles/imagedisplay.css")
+        load_css("./styles/applauncher.css")
 
         print(f'DBG: {DEBUG}')
         print(sys.argv)

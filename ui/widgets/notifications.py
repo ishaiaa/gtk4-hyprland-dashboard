@@ -1,4 +1,4 @@
-from gi.repository import Gtk, GLib, Pango, GdkPixbuf
+from gi.repository import Gtk, GLib, Pango, GdkPixbuf, Gdk
 from .tile import Tile
 from pydbus import SessionBus
 from ..utils import NotificationDaemon
@@ -106,7 +106,8 @@ class Notifications(Tile):
             
             self.close_button = Gtk.Button(
                 label="",
-                css_classes=["close-button"]
+                css_classes=["close-button"],
+                cursor=Gdk.Cursor.new_from_name("pointer")
             )
             
             self.summary_text = Gtk.Label(

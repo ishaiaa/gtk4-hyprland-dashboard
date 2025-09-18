@@ -1,9 +1,9 @@
 import subprocess
 
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk, GLib, Gdk
 from .tile import Tile
 from .imagedisplay import ImageDisplay
-from ..utils import WorkspaceListener
+from ..utils import WorkspaceListener, global_click_manager
 
 class Workspaces(Tile):
     def __init__(self):
@@ -63,6 +63,7 @@ class Workspaces(Tile):
             super().__init__(
                 vexpand=True,
                 hexpand=True,
+                cursor=Gdk.Cursor.new_from_name("pointer"),
                 css_classes=["workspace-box", "tile-bg"]
             )
             self.add_css_class(f'workspace-{id}')
@@ -86,6 +87,8 @@ class Workspaces(Tile):
             
         def handle_click(self, *args):
             subprocess.run(["hyprctl", "dispatch", "workspace", str(self.id)])
+            global_click_manager.call_callback("hide-dashboard")
+            
             
         def set_icon(self, icon):
             self.icon.set_text(icon)

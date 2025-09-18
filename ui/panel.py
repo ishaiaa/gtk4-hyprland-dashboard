@@ -1,5 +1,5 @@
 from gi.repository import Gtk, Gtk4LayerShell, Gdk, GLib
-from ui.widgets import Calendar, Clock, Power, Weather, Perf, ProcessMonitor, Notifications, Workspaces
+from ui.widgets import Calendar, Clock, Power, Weather, Perf, ProcessMonitor, Notifications, Workspaces, AppLauncher
 from .utils import make_tile, global_click_manager, global_state
 
 
@@ -42,12 +42,15 @@ class OverlayPanel(Gtk.ApplicationWindow):
         grid.attach(make_tile("Settings"), 1, 4, 1, 6)
         # grid.attach(make_tile("Settings Icons"), 1, 9, 1, 1)
         grid.attach(Workspaces(), 2, 0, 2, 2)
-        grid.attach(make_tile("AppLauncher"), 2, 2, 2, 8)
+        grid.attach(AppLauncher(), 2, 2, 2, 8)
         # grid.attach(make_tile("Pinned Apps"), 2, 8, 2, 2 nb nvvvvnn)
         grid.attach(Perf(), 4, 0, 1, 4)
         grid.attach(ProcessMonitor(), 4, 4, 1, 6)
         grid.attach(Notifications(), 5, 0, 1, 10)
 
+
+        global_click_manager.create_callback("hide-dashboard")
+        global_click_manager.attach_to_callback("hide-dashboard", self.hide_dashboard)
         self.connect("realize", self.on_realize)
 
     def on_realize(self, *args):
@@ -78,6 +81,7 @@ class OverlayPanel(Gtk.ApplicationWindow):
     def on_key_pressed(self, controller, keyval, keycode, state):
         if keyval == Gdk.KEY_Escape:
             self.toggle_dashboard()
+            self.get_root().set_focus(None)
             return True
         return False
 
@@ -104,11 +108,13 @@ class OverlayPanel(Gtk.ApplicationWindow):
         
         # global_state.set_visible(False)
         GLib.timeout_add(500, self.hide_timeout)
+        
 
     def hide_timeout(self):
         self.toggle_anchors(False)
         self.set_sensitive(False)
         global_click_manager.call_callback("process-deselect-detect")
+        global_click_manager.call_callback("update-app-launcher")
         global_state.set_visible(False)
 
     def toggle_dashboard(self):

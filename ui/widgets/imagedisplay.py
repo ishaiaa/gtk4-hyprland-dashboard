@@ -15,7 +15,7 @@ class ImageDisplay(Tile):
         super().__init__("image-display", "Image Display")
         self.set_overflow(Gtk.Overflow.HIDDEN)
         
-        self.thumbnail_pool = ThreadPoolExecutor(max_workers=4)
+        self.thumbnail_pool = ThreadPoolExecutor(max_workers=2)
         self.active_futures = set()
         
         self.menu_open = False
@@ -79,7 +79,10 @@ class ImageDisplay(Tile):
         
         self.path_entry.connect("changed", lambda e:self. update_completion(e))
         
-        self.cancel_button = Gtk.Button(label="Cancel", css_classes=["cancel-button"])
+        self.cancel_button = Gtk.Button(
+            label="Cancel", 
+            cursor=Gdk.Cursor.new_from_name("pointer"),
+            css_classes=["cancel-button"])
         self.cancel_button.connect("clicked", self.on_pressed)
         
         self.header.append(self.path_entry)
@@ -248,7 +251,10 @@ class ImageDisplay(Tile):
         
     class FileRow(Gtk.Box):
         def __init__(self, filename, fullpath, isFolder, callback, placeholdericon, foldericon, parent):
-            super().__init__(orientation=Gtk.Orientation.HORIZONTAL, hexpand=True, css_classes=["file-row"])
+            super().__init__(
+                orientation=Gtk.Orientation.HORIZONTAL, 
+                hexpand=True,
+                css_classes=["file-row"])
             self.parent = parent
             self.full_path = fullpath
             self.callback = callback
@@ -262,7 +268,7 @@ class ImageDisplay(Tile):
                     self.parent.load_thumbnail_job, self.icon, self.full_path
                 )
                 self.parent.active_futures.add(future)
-                future.add_done_callback(lambda f: self.get_parent().active_futures.discard(f))
+                future.add_done_callback(lambda f: self.parent.active_futures.discard(f))
             
             self.icon.add_css_class("file-icon")
             self.append(self.icon)

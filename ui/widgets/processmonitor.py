@@ -92,6 +92,7 @@ class ProcessMonitor(Tile):
         def __init__(self, pid, name, title, process):
             super().__init__(
                 orientation=Gtk.Orientation.VERTICAL, 
+                cursor=Gdk.Cursor.new_from_name("pointer"),
                 vexpand=True, 
                 valign=Gtk.Align.CENTER, 
                 css_classes=["user-process-box"]

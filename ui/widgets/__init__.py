@@ -8,3 +8,4 @@ from .processmonitor import ProcessMonitor
 from .notifications import Notifications
 from .notificationtoast import NotificationToast
 from .workspaces import Workspaces
+from .applauncher import AppLauncher
