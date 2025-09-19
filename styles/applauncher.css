@@ -1,0 +1,112 @@
+.app-launcher * {
+    transition: 0.2s;
+    border: none;
+    outline: none;
+  }
+  
+  .app-launcher .entry-box {
+    margin: 11px 200px;
+    padding: 10px 20px;
+    border-radius: 100px;
+    background: rgba(0,0,0,0.3);
+    border: none;
+    outline: 1px solid transparent;
+    color: rgba(255,255,255,0.7);
+    font-size: 25px;
+  }
+  
+  .app-launcher .entry-box:focus-within {
+    outline: 1px solid pink;
+  }
+  
+  .app-launcher .entry-box image {
+    padding: 10px;
+    margin-right: 10px;
+    transform: scale(2);
+  }
+  
+  .app-launcher .app-tile {
+    background: rgba(255,255,255,0.01);
+    padding: 10px 10px;
+    margin: 6px 6px;
+    border-radius: 20px;
+    min-width: 182px;
+  }
+  
+  .app-launcher .app-tile:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  
+  .app-launcher .flow-box>* {
+    background: none;
+  }
+  
+  .app-launcher .flow-box>*:focus .app-tile {
+    background: rgba(255,255,255,0.1);
+  }
+  
+  .app-launcher .flow-box>*:active .app-tile {
+    background: rgba(255,255,255,0.15);
+  }
+  
+  .app-launcher .app-tile:active {
+    background: rgba(255,255,255,0.15);
+  }
+  
+  .app-launcher .app-icon {
+    min-height: 130px;
+    min-width: 100px;
+    padding: 10px 0;
+    margin: 5px;
+  }
+  
+  .app-launcher .app-title {
+    font-size: 18px;
+    font-weight: 400;
+    min-height: 3rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 5px;
+  }
+  
+  .app-launcher .overlay-box-icon {
+    padding: 5px 5px;
+    border-radius: 100px;
+  }
+  
+  .app-launcher .overlay-box-icon-pin {
+    font-size: 20px;
+    min-height:22px;
+    min-width: 22px;
+    margin-left: -1px;
+    color: transparent;
+  }
+  
+  .app-launcher .app-tile:hover .overlay-box-icon-pin {
+    color: rgba(255,255,255,0.5);
+  }
+  
+  .app-launcher .app-tile.pinned  .overlay-box-icon-pin {
+    color: rgba(255,255,255,1.0);
+  }
+  
+  .app-launcher .pinned-apps {
+    padding: 5px;
+  }
+  
+  .app-launcher .pinned-apps .pinned-app {
+    border-radius: 20px;
+    background: rgba(255,255,255,0.01);
+    padding: 5px;
+  }
+  
+  .app-launcher .pinned-apps .pinned-app.not-empty:hover {
+    background: rgba(255,255,255,0.05);
+  }
+  
+  .app-launcher .pinned-apps .pinned-app.swap-tile {
+    background: rgba(250,250,250,0.4);
+  }
+  
+  .app-launcher .pinned-apps .pinned-app.swap-tile:hover {
+    background: rgba(250,250,250,0.4);
+  }
