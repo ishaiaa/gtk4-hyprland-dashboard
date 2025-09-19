@@ -9,3 +9,4 @@ from .notifications import Notifications
 from .notificationtoast import NotificationToast
 from .workspaces import Workspaces
 from .applauncher import AppLauncher
+from .settings import Settings

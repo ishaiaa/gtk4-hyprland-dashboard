@@ -1,5 +1,5 @@
 from gi.repository import Gtk, Gtk4LayerShell, Gdk, GLib
-from ui.widgets import Calendar, Clock, Power, Weather, Perf, ProcessMonitor, Notifications, Workspaces, AppLauncher
+from ui.widgets import Calendar, Clock, Power, Weather, Perf, ProcessMonitor, Notifications, Workspaces, AppLauncher, Settings
 from .utils import make_tile, global_click_manager, global_state
 
 
@@ -39,7 +39,7 @@ class OverlayPanel(Gtk.ApplicationWindow):
         grid.attach(Calendar(), 0, 4, 1, 4)
         grid.attach(Power(), 0, 8, 1, 2)
         grid.attach(make_tile("Music Player"), 1, 0, 1, 4)
-        grid.attach(make_tile("Settings"), 1, 4, 1, 6)
+        grid.attach(Settings(), 1, 4, 1, 6)
         # grid.attach(make_tile("Settings Icons"), 1, 9, 1, 1)
         grid.attach(Workspaces(), 2, 0, 2, 2)
         grid.attach(AppLauncher(), 2, 2, 2, 8)

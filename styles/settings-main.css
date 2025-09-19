@@ -1,0 +1,67 @@
+.settings * {
+    transition: 0.2s;
+  }
+  
+  
+  .settings .header {
+       font-size: 40px;
+       margin: -1px -1px 0px -1px;
+       padding: 10px 20px;
+       border-radius: 15px 15px 0 0;
+       background: linear-gradient(30deg, rgba(250, 200, 222, 0.9), rgba(250, 160, 189, 0.9));
+   }
+    
+  .settings .header * {
+      font-size: 30px;
+      color: black;
+      font-weight: 300;
+   }
+  
+  .settings .select-button .icon {
+    font-family: "Font Awesome 7 Free Solid";
+    font-size: 65px;
+    color: #fac8dee6;
+  }
+  
+  .settings .select-button {
+    background: linear-gradient(180deg,rgba(61, 61, 61, 0.5), rgba(41, 41, 41, 0.5));
+  }
+  
+  .settings .bluetooth .icon {
+    font-size: 70px;
+    margin-left: -5px;
+  }
+  
+  .settings .select-button:hover {
+    background: linear-gradient(130deg, rgba(150,150,150,0.2), rgba(200,200,200,0.3));
+  }
+  
+  .settings .select-button:active {
+    background: linear-gradient(130deg, rgba(100,100,100,0.4), rgba(200,200,200,0.5));
+  }
+  
+  
+  .settings .select-button.active {
+    background: linear-gradient(110deg, #fac8dee6, #faa0bde6);
+  }
+  
+  
+  .settings .wifi.active {
+    background: linear-gradient(110deg, #fac8dee6, #faa0bde6);
+  }
+  
+  .settings .bluetooth.active {
+    background: linear-gradient(110deg, #fac8dee6, #faa0bde6);
+  }
+  
+  .settings .volume.active {
+    background: linear-gradient(110deg, #fac8dee6, #faa0bde6);
+  }
+  
+  .settings .light.active {
+    background: linear-gradient(110deg, #fac8dee6, #faa0bde6);
+  }
+  
+  .settings .active .icon {
+    color: white;
+  }
