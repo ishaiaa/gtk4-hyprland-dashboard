@@ -3,7 +3,7 @@ import subprocess
 from gi.repository import Gtk, GLib, Gdk
 from .tile import Tile
 from .imagedisplay import ImageDisplay
-from ..utils import WorkspaceListener, global_click_manager
+from ..utils import WorkspaceListener, global_callback_manager
 
 class Workspaces(Tile):
     def __init__(self):
@@ -87,7 +87,7 @@ class Workspaces(Tile):
             
         def handle_click(self, *args):
             subprocess.run(["hyprctl", "dispatch", "workspace", str(self.id)])
-            global_click_manager.call_callback("hide-dashboard")
+            global_callback_manager.call_callback("hide-dashboard")
             
             
         def set_icon(self, icon):

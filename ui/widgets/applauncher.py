@@ -7,7 +7,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from gi.repository import Gtk, Gdk, GdkPixbuf, GLib, Pango
 from .tile import Tile
-from ..utils import get_applications,increment_usage, global_click_manager, read_pinned, pin_unpin, overwrite_pins
+from ..utils import get_applications,increment_usage, global_callback_manager, read_pinned, pin_unpin, overwrite_pins
 class AppLauncher(Tile):
     def __init__(self):
         super().__init__("app-launcher", "App Launcher", False, True)
@@ -98,8 +98,8 @@ class AppLauncher(Tile):
         self.append(self.grid)
         self.update_app_list()
         
-        global_click_manager.create_callback("update-app-launcher")
-        global_click_manager.attach_to_callback("update-app-launcher", self.update_app_list)
+        global_callback_manager.create_callback("update-app-launcher")
+        global_callback_manager.attach_to_callback("update-app-launcher", self.update_app_list)
         
         self.update_pins()
         
@@ -335,7 +335,7 @@ class AppLauncher(Tile):
         def launch(self):
             increment_usage(self.executable)
             self.run_app(self.executable)
-            global_click_manager.call_callback("hide-dashboard")
+            global_callback_manager.call_callback("hide-dashboard")
             
         def run_app(self, exec_line):
             args = shlex.split(exec_line)
@@ -415,7 +415,7 @@ class AppLauncher(Tile):
         def launch(self, *args):
             increment_usage(self.executable)
             self.run_app(self.executable)
-            global_click_manager.call_callback("hide-dashboard")
+            global_callback_manager.call_callback("hide-dashboard")
             
         def run_app(self, exec_line):
             args = shlex.split(exec_line)

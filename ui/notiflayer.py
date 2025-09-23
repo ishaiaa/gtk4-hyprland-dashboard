@@ -2,7 +2,7 @@ import cairo
 
 from gi.repository import Gtk, Gtk4LayerShell, Gdk, GLib
 from ui.widgets import NotificationToast
-from .utils import make_tile, global_click_manager, global_state, NotificationDaemon
+from .utils import make_tile, global_callback_manager, global_state, NotificationDaemon
 
 
 class NotificationsLayer(Gtk.Window):

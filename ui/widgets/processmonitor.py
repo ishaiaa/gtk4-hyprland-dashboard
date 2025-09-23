@@ -6,7 +6,7 @@ import threading
 
 from gi.repository import Gio, Gtk, Gdk, GLib, GdkPixbuf, Pango
 from .tile import Tile
-from ..utils import global_click_manager, get_hyprland_programs, global_state
+from ..utils import global_callback_manager, get_hyprland_programs, global_state
 
 """
 To anyone reading this: 
@@ -19,9 +19,9 @@ and i lack the willpower to refactor this xD
 class ProcessMonitor(Tile):
     def __init__(self):
         super().__init__("process-monitor", "Process Monitor")
-        global_click_manager.create_callback("process-deselect-detect")
-        global_click_manager.create_callback("process-deselect-detect-parent")
-        global_click_manager.attach_to_callback("process-deselect-detect-parent", self.deselect_handler)
+        global_callback_manager.create_callback("process-deselect-detect")
+        global_callback_manager.create_callback("process-deselect-detect-parent")
+        global_callback_manager.attach_to_callback("process-deselect-detect-parent", self.deselect_handler)
         self.header_box = Gtk.Box(
                 orientation=Gtk.Orientation.HORIZONTAL,
                 hexpand=True,
@@ -55,7 +55,7 @@ class ProcessMonitor(Tile):
     def deselect_handler(self, x, y):
         alloc = self.get_allocation()
         if not (alloc.x <= x <= alloc.x + alloc.width and alloc.y <= y <= alloc.y + alloc.height):
-            global_click_manager.call_callback("process-deselect-detect")
+            global_callback_manager.call_callback("process-deselect-detect")
 
     def update_process_list(self):
         if(not global_state.dashboard_visible):
@@ -261,10 +261,10 @@ class ProcessMonitor(Tile):
             self.gesture = Gtk.GestureClick.new()
             self.gesture.connect("pressed", self.on_box_click)
             self.add_controller(self.gesture)
-            global_click_manager.attach_to_callback("process-deselect-detect", self.handle_deselect)
+            global_callback_manager.attach_to_callback("process-deselect-detect", self.handle_deselect)
             
         def on_box_click(self, *args):
-            global_click_manager.call_callback("process-deselect-detect")
+            global_callback_manager.call_callback("process-deselect-detect")
             self.menu_box.add_css_class("menu-shown")
             self.revealer.set_reveal_child(True) 
         

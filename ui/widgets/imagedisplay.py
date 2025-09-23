@@ -180,7 +180,6 @@ class ImageDisplay(Tile):
             
         self.path_entry.set_text(path)
         self.path_entry.get_root().set_focus(None)
-        print(f'Entry {path}')
         
         for row in self.file_list:
             for child in row:
@@ -295,15 +294,12 @@ class ImageDisplay(Tile):
             
             if self.press_count < 0:
                 self.press_count = 0
-            print("Decrement")
             
         def click_callback(self, *args):
             self.press_count+=1
-            print(f'CLICK {self.press_count}')
             GLib.timeout_add(500, self.decrement_click_count)
             
             if(self.press_count >= 2):
-                print("PRESSED")
                 self.press_count = 0
                 self.callback()
                 

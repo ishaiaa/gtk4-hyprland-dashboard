@@ -1,6 +1,8 @@
 from gi.repository import Gtk, Gdk
 from .tile import Tile
 
+from .settings_panels import Network
+
 class Settings(Tile):
     def __init__(self):
         super().__init__("settings", "Settings", False, True)
@@ -56,7 +58,7 @@ class Settings(Tile):
         
         self.stack = Gtk.Stack(hhomogeneous=True, vexpand=True, hexpand=True)
         
-        self.stack.add_titled(Gtk.Label(label="TEMP BOX 1"), "wifi", "WIFI BOX")
+        self.stack.add_titled(Network(), "wifi", "Network Settings")
         self.stack.add_titled(Gtk.Label(label="TEMP BOX 2"), "bluetooth", "BLUETOOTH BOX")
         self.stack.add_titled(Gtk.Label(label="TEMP BOX 3"), "volume", "VOLUME BOX")
         self.stack.add_titled(Gtk.Label(label="TEMP BOX 4"), "light", "LIGHT BOX")

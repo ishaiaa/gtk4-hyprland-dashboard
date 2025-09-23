@@ -1,6 +1,6 @@
 from gi.repository import Gtk, Gtk4LayerShell, Gdk, GLib
 from ui.widgets import Calendar, Clock, Power, Weather, Perf, ProcessMonitor, Notifications, Workspaces, AppLauncher, Settings
-from .utils import make_tile, global_click_manager, global_state
+from .utils import make_tile, global_callback_manager, global_state
 
 
 import sys
@@ -49,8 +49,8 @@ class OverlayPanel(Gtk.ApplicationWindow):
         grid.attach(Notifications(), 5, 0, 1, 10)
 
 
-        global_click_manager.create_callback("hide-dashboard")
-        global_click_manager.attach_to_callback("hide-dashboard", self.hide_dashboard)
+        global_callback_manager.create_callback("hide-dashboard")
+        global_callback_manager.attach_to_callback("hide-dashboard", self.hide_dashboard)
         self.connect("realize", self.on_realize)
 
     def on_realize(self, *args):
@@ -86,7 +86,7 @@ class OverlayPanel(Gtk.ApplicationWindow):
         return False
 
     def on_click(self, controller, n_press, x, y):
-        global_click_manager.call_callback("process-deselect-detect-parent", x, y)
+        global_callback_manager.call_callback("process-deselect-detect-parent", x, y)
 
     # --------------------------
     # Dashboard fade
@@ -113,8 +113,8 @@ class OverlayPanel(Gtk.ApplicationWindow):
     def hide_timeout(self):
         self.toggle_anchors(False)
         self.set_sensitive(False)
-        global_click_manager.call_callback("process-deselect-detect")
-        global_click_manager.call_callback("update-app-launcher")
+        global_callback_manager.call_callback("process-deselect-detect")
+        global_callback_manager.call_callback("update-app-launcher")
         global_state.set_visible(False)
 
     def toggle_dashboard(self):
