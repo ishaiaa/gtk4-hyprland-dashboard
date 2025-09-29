@@ -125,7 +125,7 @@ class Network(Gtk.Box):
         
         
         connected_wifis_tile_ref = []
-        
+        aviable_networks_refs = []
             
         #SAVED
         for dev in self.saved_networks_box:
@@ -134,6 +134,8 @@ class Network(Gtk.Box):
                 remove_queue.append(dev)
             else:
                 link_data = next((d for d in data["available_networks"] if d.get("ssid") == device_data["ssid"]), None)
+                if link_data:
+                    aviable_networks_refs.append(link_data["ssid"])
                 data["saved_networks"].remove(device_data)
                 device_data["linked_data"] = link_data
                 dev.update_data(device_data)
@@ -145,6 +147,8 @@ class Network(Gtk.Box):
                 continue
             device_data = dev
             link_data = next((d for d in data["available_networks"] if d.get("ssid") == device_data["ssid"]), None)
+            if link_data:
+                aviable_networks_refs.append(link_data["ssid"])
             device_data["linked_data"] = link_data
             self.saved_networks_box.append(self.NetworkEntry(self.network_monitor, dev["uuid"], device_data, NetworkType.WIFI, NetworkState.SAVED))
                 
@@ -155,6 +159,11 @@ class Network(Gtk.Box):
         for dev in connected_wifis_tile_ref:
             self.saved_networks_box.remove(dev)
             
+            
+        for ssid in aviable_networks_refs:
+            device_data = next((d for d in data["available_networks"] if d.get("ssid") == ssid), None)
+            if device_data:
+                data["available_networks"].remove(device_data)
             
         connected_wifis_tile_ref = []
             
