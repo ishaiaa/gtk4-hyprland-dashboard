@@ -1,17 +1,312 @@
-#!/programming/gtk4-hyprland-dashboard/.venv/bin/python3
-import gi
-gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, Gio
+import threading
+import sdbus
+import uuid
 
-class MyWindow(Gtk.Window):
-    def __init__(self):
-        super().__init__(title="GTK4 Test")
-        self.set_default_size(400, 300)
+from pprint import pprint
+from sdbus_block.networkmanager import (
+    NetworkManager,
+    NetworkManagerSettings,
+    NetworkDeviceGeneric,
+    NetworkConnectionSettings,
+    NetworkDeviceWireless,
+    IPv4Config,
+    ActiveConnection,
+    AccessPoint,
+    NetworkConnectionSettings,
+    ConnectivityState
+)
+from sdbus_block.networkmanager.enums import (
+    DeviceType
+)
 
-win = MyWindow()
-win.present()
 
-# Use GLib main loop instead of Gtk.main()
+
+sdbus.set_default_bus(sdbus.sd_bus_open_system())
+
 from gi.repository import GLib
-loop = GLib.MainLoop()
-loop.run()
+
+class NetworkMonitor():
+    def __init__(self):
+        self.network_manager = NetworkManager()
+        self.network_manager_settings = NetworkManagerSettings()
+        self._devices = []
+        self._track_devices()
+        self._scan_networks()
+        GLib.timeout_add_seconds(30, self._scan_networks)
+        
+    def _track_devices(self):
+        self._devices = []
+        for path in self.network_manager.devices:
+            dev = NetworkDeviceGeneric(path)
+            type = dev.device_type
+            if type not in [DeviceType.WIFI, DeviceType.ETHERNET]:
+                continue
+            self._devices.append({
+                "path": path,
+                "iface": dev.interface,
+                "wireless": type == DeviceType.WIFI
+            })
+        
+
+    def get_devices_data(self):
+        devices = []
+        for device_dict in self._devices:
+            dev = None
+            if device_dict["wireless"]:
+                dev = NetworkDeviceWireless(device_dict["path"])
+            else:
+                dev = NetworkDeviceGeneric(device_dict["path"])
+            
+            type = dev.device_type
+            connection_status = dev.ip4_connectivity
+            connection_details = None
+            ip4 = None
+            
+            if connection_status > 1:
+                try:
+                    ip4 = IPv4Config(dev.ip4_config).address_data[0]["address"][1]
+                except:
+                    ip4 = None
+                    
+                if type == DeviceType.WIFI:
+                    ap = AccessPoint(dev.active_access_point)
+                    connection_details = {
+                        "ssid": str(ap.ssid.decode('utf-8')),
+                        "bssid": str(ap.hw_address),
+                        "strength": ap.strength,
+                        "wpa_flags": ap.wpa_flags,
+                        "rsn_flags": ap.rsn_flags
+                    }
+                    
+            devices.append({
+                "iface": dev.interface,
+                "type": "wifi" if type == DeviceType.WIFI else "ethernet",
+                "state": dev.state,
+                "status": connection_status,
+                "ip4": ip4,
+                "connected_ap": connection_details
+            })
+        
+        return devices
+
+    def get_saved_networks(self):
+        conn = self.network_manager_settings.list_connections()
+        saved_networks = []
+        for c in conn:
+            settings = NetworkConnectionSettings(c).get_settings()
+            if settings["connection"]["type"][1] == "802-11-wireless":
+                print(settings)
+                saved_networks.append({
+                    "id": settings["connection"]["id"][1],
+                    "uuid": settings["connection"]["uuid"][1],
+                    "ssid": str(settings["802-11-wireless"]["ssid"][1].decode('utf-8')),
+                    "iface": settings["connection"]["interface-name"][1]
+                })
+        return saved_networks
+    
+    def _scan_networks(self):
+        for device_dict in self._devices:
+            if not device_dict["wireless"]:
+                continue
+            
+            dev = NetworkDeviceWireless(device_dict["path"])
+            dev.request_scan({})
+        return True
+    
+    def get_aviable_networks(self):
+        aviable_networks = []
+        for device_dict in self._devices:
+            if not device_dict["wireless"]:
+                continue
+            
+            dev = NetworkDeviceWireless(device_dict["path"])
+            for ap_path in dev.get_all_access_points():
+                ap = AccessPoint(ap_path)
+                aviable_networks.append({
+                    "ssid": str(ap.ssid.decode('utf-8')),
+                    "bssid": str(ap.hw_address),
+                    "strength": ap.strength,
+                    "iface": device_dict["iface"],
+                    "wpa_flags": ap.wpa_flags,
+                    "rsn_flags": ap.rsn_flags
+                })
+        return aviable_networks
+
+    def get_data(self):
+        return {
+            "devices": self.get_devices_data(),
+            "saved_networks": self.get_saved_networks(),
+            "aviable": self.get_aviable_networks(),
+        }
+
+    """
+    CONNECTION MANAGEMENT METHODS
+    """
+
+    def enable_wifi(self, iface: str, enable: bool, callback=None):
+        try:
+            device = None
+            for device_dict in self._devices:
+                if device_dict["iface"] == iface:
+                    device = NetworkDeviceWireless(device_dict["path"])
+                    break
+                    
+            def do_enable():
+                try:
+                    device.managed = enable
+                    if callback:
+                        GLib.idle_add(callback, 0)
+                except Exception:
+                    if callback:
+                        GLib.idle_add(callback, 1)
+                return False
+
+            GLib.idle_add(do_enable)
+        except Exception:
+            if callback:
+                GLib.idle_add(callback, 1)
+
+    def disconnect_wifi(self, iface: str, callback=None):
+        def task():
+            try:
+                deactivated = False
+                for device_dict in self._devices:
+                    if device_dict["iface"] == iface:
+                        dev = NetworkDeviceWireless(device_dict["path"])
+                        if dev.ip4_connectivity > 1:
+                            self.network_manager.deactivate_connection(dev.active_connection)
+                            deactivated = True
+                        break
+                
+                if deactivated and callback:
+                    GLib.idle_add(callback, 0)
+            except Exception:
+                if callback:
+                    GLib.idle_add(callback, 1)
+        threading.Thread(target=task, daemon=True).start()
+
+
+    def connect_saved(self, iface: str, uuid: str, callback=None):
+        conn_path = None
+        
+        for c in self.network_manager_settings.list_connections():
+            if NetworkConnectionSettings(c).get_settings()["connection"]["uuid"][1] == uuid:
+                conn_path = c
+                break
+        
+        device_path = None
+        for device_dict in self._devices:
+            if device_dict["iface"] == iface:            
+                device_path = device_dict["path"]
+                break
+            
+        if not conn_path or not device_path:
+            if callback:
+                GLib.idle_add(callback, 1)
+            return
+            
+        def task():
+            try:
+                self.network_manager.activate_connection(conn_path, device_path)
+                if callback:
+                    GLib.idle_add(callback, 0)
+            except Exception:
+                if callback:
+                    GLib.idle_add(callback, 1)
+                    
+        threading.Thread(target=task, daemon=True).start()
+        
+    def forget_saved(self, uuid: str, callback=None):
+        conn_path = None
+        
+        for c in self.network_manager_settings.list_connections():
+            if NetworkConnectionSettings(c).get_settings()["connection"]["uuid"][1] == uuid:
+                conn_path = c
+                break
+            
+        if not conn_path :
+            if callback:
+                GLib.idle_add(callback, 1)
+            return
+            
+        def task():
+            try:
+                NetworkConnectionSettings(conn_path).delete()
+                if callback:
+                    GLib.idle_add(callback, 0)
+            except Exception:
+                if callback:
+                    GLib.idle_add(callback, 1)
+                    
+        threading.Thread(target=task, daemon=True).start()
+        
+        
+    def connect_new(self, iface: str, ssid: str, password: str = None, callback=None):
+        device_path = None
+        for device_dict in self._devices:
+            if device_dict["iface"] == iface:            
+                device_path = device_dict["path"]
+                break
+            
+        if not device_path:
+            if callback:
+                GLib.idle_add(callback, 1)
+            return
+
+        device = NetworkDeviceWireless(device_path)
+
+        # build temporary connection settings
+        conn_settings = {
+            "connection": {
+                "id": f"HYPRDASH_TEMP {ssid}",
+                "type": "802-11-wireless",
+                "uuid": str(uuid.uuid4()),
+                "interface-name": iface
+            },
+            "802-11-wireless": {
+                "ssid": list(ssid.encode()),  # NM expects bytes in a list
+                "mode": "infrastructure"
+            },
+            "ipv4": {"method": "auto"},
+            "ipv6": {"method": "auto"}
+        }
+
+        if password:
+            conn_settings["802-11-wireless-security"] = {
+                "key-mgmt": "wpa-psk",
+                "psk": password
+            }
+
+        # run connection in a background thread
+        def task():
+            conn_path = None
+            try:
+                conn_path, _ = self.network_manager.add_and_activate_connection(conn_settings,device_path)
+                temp_conn = NetworkConnectionSettings(conn_path)
+                
+                new_settings = dict(temp_conn.get_settings())
+                new_settings["connection"]["id"] = ssid
+                new_settings["connection"]["uuid"] = str(uuid.uuid4())
+                
+                self.network_manager.add_and_activate_connection(new_settings, device_path)
+
+                temp_conn.delete()
+
+                if callback:
+                    GLib.idle_add(callback, 0)
+                    
+            except Exception as e:
+                print("Failed to connect:", e)
+                
+                if conn_path:
+                    try:
+                        NetworkConnectionSettings(conn_path).delete()
+                    except Exception:
+                        pass
+                
+                if callback:
+                    GLib.idle_add(callback, 1)
+
+        threading.Thread(target=task, daemon=True).start()
+        
+pprint(NetworkMonitor().get_data())

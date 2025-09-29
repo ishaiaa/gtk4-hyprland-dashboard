@@ -25,7 +25,6 @@ os.environ["LANG"] = "en_US.UTF-8"
 
 
 SOCKET_PATH = "/tmp/hyperdash.sock"
-
 def start_socket_server(app: MyApp):
     try:
         os.unlink(SOCKET_PATH)

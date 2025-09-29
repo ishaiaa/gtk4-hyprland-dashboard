@@ -7,4 +7,4 @@ from .hyprland_programs import get_hyprland_programs
 from .imageselector_helper import save_image_path, load_image_path
 from .notif_daemon import NotificationDaemon
 from .workspace_listener import WorkspaceListener
-from .network_manager import network_monitor
+from .network_manager import NetworkMonitor
