@@ -1,3 +1,5 @@
+
+
 .network-settings * {
     margin: 0;
     padding: 0;
@@ -6,63 +8,85 @@
     outline: none;
   }
   
-  .network-settings .header {
-     font-size: 40px;
-     margin: -1px -1px 0px -1px;
-     padding: 10px 20px;
-     border-radius: 15px 15px 0 0;
-     background: linear-gradient(30deg, rgba(250, 200, 222, 0.9), rgba(250, 160, 189, 0.9));
-  }
-  
-  .network-settings .header * {
-    font-size: 30px;
-    color: black;
-    font-weight: 300;
-  }
-  
+ 
   .network-settings .scroll-window {
     padding: 0px 10px 10px;
   }
-  
-  .network-settings .user-process-box {
+ 
+.network-settings .network-expander {
+  margin: 5px 0 0;
+}
+
+.network-settings .network-expander title {
+  opacity: 0.7;
+  padding: 0 5px;
+}
+
+.network-settings .network-expander title:hover {
+  opacity: 0.8;
+  background: rgba(255,255,255,0.05);
+}
+
+.network-settings .network-expander title label {
+  color: white;
+  padding: 4px 5px;
+  font-size: 15px;
+  font-family: monospace;
+  font-weight: 400;
+}
+ 
+  .network-settings .network-entry-box {
     background: linear-gradient(150deg,rgba(255,255,255,0.03),rgba(255,255,255,0.07));
     border-radius:10px;
     margin: 5px 0;
     padding: 3px 10px 3px 0;
-    min-height: 60px;
   }
   
-  .network-settings .user-process-box:hover {
+  .network-settings .network-entry-box:hover {
     background: linear-gradient(150deg,rgba(255,255,255,0.06),rgba(255,255,255,0.12));
   }
   
   .network-settings .icon {
     min-width: 65px;
     min-height: 50px;
-    /*transform: scale(3);*/
-    margin: 0 10px 0 0;
+    margin: 0 0 0 0;
+    opacity: 0.8;
+    -gtk-icon-filter: sepia(10%) saturate(2000%) hue-rotate(308deg);
+  }
+
+  .network-settings .off .icon {
+    -gtk-icon-filter: invert(40%);
   }
   
   .network-settings .text-grid {
     padding: 2px 0;
   }
   
-  .network-settings .process-name {
+  .network-settings .network-name {
     font-weight: 700;
     font-size: 22px;
-    margin: 0px 0 -3px 0;
+    margin: 0px 0 -1px 0;
   }
+
+.network-settings .off {
+  opacity: 0.5;
+}
   
-  .network-settings .process-path {
+  .network-settings .network-subtitle {
     margin: -3px 0 0px 0;
     font-weight: 300;
     font-size: 16px;
     color: rgba(255,255,255,0.7);
   }
+
+  .network-settings .error {
+    font-weight: 400;
+    color: rgba(200,70,30,1.0);
+  }
   
   .network-settings .name {
     margin: -3px 0 0px 0;
-    font-family: monospace;
+    font-family: "Font Awesome 7 Free Solid";
     font-weight: 500;
     font-size: 16px;
     color: rgba(255,255,255,0.4);
@@ -74,19 +98,20 @@
     font-weight: 300;
     font-size: 16px;
     color: rgba(255,255,255,0.8);
+
   }
   
   
   .network-settings .menu-box {
-    min-height: 80px;
+
     opacity: 0;
-    margin: -3px 0 -3px 0;
+    margin: 5px 5px 10px;
     transition: 1s;
   }
   
   .network-settings .menu-shown {
-    margin: -3px 0 -3px 0;
     opacity: 1.0;
+    margin-top: 5px;
   }
   
   .network-settings .menu-grid {
@@ -95,8 +120,9 @@
   
   .network-settings .button {
     background: rgba(255,255,255,0.1);
-    margin: 4px;
-    border-radius: 5px;
+    margin: 0 0 0 0px;
+    padding: 10px;
+    border-radius: 10px;
   }
   
   .network-settings .button:hover {
@@ -106,3 +132,23 @@
   .network-settings .button:active {
     background: rgba(255,255,255,0.3);
   }
+
+.network-settings .password-entry {
+  background: rgba(0,0,0,0.2);
+  border-radius: 5px;
+  border: 1px solid rgba(0,0,0,0.4);
+  color: rgba(255,255,255,0.8);
+  padding: 5px 5px 5px 10px;
+  font-size: 20px;
+  font-family: mono;
+  font-weight: 400;
+}
+
+.network-settings .password-entry .right {
+  padding: 0 10px 0 10px;
+}
+
+.network-settings .busy * {
+  color: rgba(255,255,255,0.6);
+  opacity: 0.95;
+}

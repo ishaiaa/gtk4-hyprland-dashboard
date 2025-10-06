@@ -65,7 +65,14 @@ class NetworkMonitor():
             
             type = dev.device_type
             connection_status = dev.ip4_connectivity
-            connection_details = None
+            connection_details = {
+                "ssid": "Not Connected",
+                "bssid": "00:00:00:00:00:00",
+                "strength": 0,
+                "wpa_flags": 0,
+                "rsn_flags": 0
+            }
+            
             ip4 = None
             
             if connection_status > 1:
@@ -83,6 +90,7 @@ class NetworkMonitor():
                         "wpa_flags": ap.wpa_flags,
                         "rsn_flags": ap.rsn_flags
                     }
+
                     
             devices.append({
                 "iface": dev.interface,
@@ -151,6 +159,8 @@ class NetworkMonitor():
 
     """
     CONNECTION MANAGEMENT METHODS
+    
+    TODO: Add awaiting networkmanager calls, for accurate callbacks (right now they return instantly)
     """
 
     def enable_wifi(self, iface: str, enable: bool, callback=None):
@@ -189,15 +199,32 @@ class NetworkMonitor():
                 deactivated = False
                 for device_dict in self._devices:
                     print(device_dict)
-                    if device_dict["iface"] == iface:
-                        dev = NetworkDeviceWireless(device_dict["path"], bus=bus)
-                        if dev.ip4_connectivity > 1:
-                            self.network_manager.deactivate_connection(dev.active_connection)
-                            deactivated = True
+                    if device_dict["iface"] != iface:
+                        continue
+                    dev = NetworkDeviceWireless(device_dict["path"], bus=bus)
+                    if dev.ip4_connectivity > 1:
+                        self.network_manager.deactivate_connection(dev.active_connection)
+                        timeout = 5
+                        start = time.time()
+                        while True:
+                            try:
+                                time_passed = time.time() - start
+                                state = dev.ip4_connectivity
+                                if state <= 1:
+                                    deactivated = True
+                                    break
+                                elif time_passed > timeout:
+                                    break
+                                time.sleep(0.1)
+                            except:
+                                break
                         break
                 
                 if deactivated and callback:
                     GLib.idle_add(callback, 0)
+                elif callback:
+                    GLib.idle_add(callback, 1)
+                    
             except Exception:
                 traceback.print_exc()
                 if callback:
@@ -225,13 +252,51 @@ class NetworkMonitor():
                 GLib.idle_add(callback, 1)
             return
             
-        self.network_manager.activate_connection(conn_path, device_path)
+        active_connection_path = self.network_manager.activate_connection(conn_path, device_path)
             
         def task():
+            bus = sdbus.sd_bus_open_system()
+
+            nm = sdbus.DbusInterfaceCommon(
+                bus,
+                '/org/freedesktop/NetworkManager',
+                'org.freedesktop.NetworkManager'
+            )
+            
             try:
-                if callback:
-                    GLib.idle_add(callback, 0)
-            except Exception:
+                # add and activate temporary connection
+                active_connection = ActiveConnection(active_connection_path, bus=bus)
+                timeout = 15
+                start = time.time()
+                connected = False
+                error = False
+                while True:
+                    try:
+                        time_passed = time.time() - start
+                        state = active_connection.state
+                        if state == ConnectionState.ACTIVATED:
+                            connected = True
+                            break
+                        elif state  == ConnectionState.DEACTIVATED:
+                            break
+                        elif state == ConnectionState.UNKNOWN or time_passed > timeout:
+                            self.network_manager.deactivate_connection(active_connection_path)
+                            break
+                        time.sleep(0.1)
+                    except:
+                        break
+                
+                if connected:
+                    if callback:
+                        GLib.idle_add(callback, 0)
+                else:
+                    if callback:
+                        GLib.idle_add(callback, 1)
+
+            except Exception as e:
+                traceback.print_exc()
+                print("Failed to connect:", e)
+                
                 if callback:
                     GLib.idle_add(callback, 1)
                     
@@ -317,7 +382,6 @@ class NetworkMonitor():
             
             try:
                 # add and activate temporary connection
-                active_connection = ActiveConnection(active_connection_path, bus=bus)
                 active_conn = ActiveConnection(active_connection_path, bus=bus)
                 timeout = 15
                 start = time.time()

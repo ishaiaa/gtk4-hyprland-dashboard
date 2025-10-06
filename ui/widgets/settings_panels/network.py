@@ -3,7 +3,7 @@ from enum import StrEnum
 import random
 import json
 from gi.repository import Gtk, GLib, Gdk, Pango
-from ...utils import NetworkMonitor, global_callback_manager
+from ...utils import NetworkMonitor, global_callback_manager, global_state
 
 import json
 
@@ -94,6 +94,11 @@ class Network(Gtk.Box):
 
 
     def update_state(self):
+        if(not global_state.dashboard_visible):
+            return True
+        
+        
+        
         data = self.network_monitor.get_data()
         remove_queue = []
         connected_wifis = []
@@ -122,7 +127,7 @@ class Network(Gtk.Box):
             self.connected_networks_box.remove(dev)
             
         
-        
+        remove_queue = []
         
         connected_wifis_tile_ref = []
         aviable_networks_refs = []
@@ -159,12 +164,12 @@ class Network(Gtk.Box):
         for dev in connected_wifis_tile_ref:
             self.saved_networks_box.remove(dev)
             
-            
         for ssid in aviable_networks_refs:
             device_data = next((d for d in data["available_networks"] if d.get("ssid") == ssid), None)
             if device_data:
                 data["available_networks"].remove(device_data)
             
+        remove_queue = []
         connected_wifis_tile_ref = []
             
         #AVIABLE
@@ -210,6 +215,7 @@ class Network(Gtk.Box):
             self.aviable_networks_expander.set_visible(False)
             
             
+        
         return True
     
     class NetworkEntry(Gtk.Box):
@@ -335,6 +341,7 @@ class Network(Gtk.Box):
             # entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "")
 
             self.password_entry.connect("icon-press", self.toggle_password)
+            self.password_entry.connect("activate", self.connect_new)
             
             self.action_button = Gtk.Button(
                 hexpand=True,css_classes=["button"])
@@ -423,6 +430,7 @@ class Network(Gtk.Box):
                         self.add_css_class("off")
                         self.update_subtitle("Disconnected")
                 else:
+                    self.state_lock(False)
                     if int(self.data["state"]) == 100:
                         protected =  int(self.data["connected_ap"]["wpa_flags"]) > 0 or int(self.data["connected_ap"]["rsn_flags"]) > 0
                         
@@ -496,11 +504,43 @@ class Network(Gtk.Box):
                     self.update_subtitle("Not Protected")
 
 
+        def connect_new(self, *args):
+            def connect_new_callback(state):
+                print(f'what the fuck {state}')
+                self.state_lock(False)
+                self.password_entry.set_editable(True)
+                self.password_entry.set_sensitive(True)
+                
+                if state == 2:
+                    self.update_subtitle("Password Incorrect!", True, 5000)
+                elif state is not 0:
+                    self.update_subtitle("Couldn't establish connection :c", True, 5000)
+            protected =  int(self.data["wpa_flags"]) > 0 or int(self.data["rsn_flags"]) > 0
+            
+            password = None
+            
+            if protected:
+                password = self.password_entry.get_text()
+                self.password_entry.set_text("")
+                self.password_entry.set_editable(False)
+                self.password_entry.set_sensitive(False)
+            
+            self.state_lock(True)
+            self.update_subtitle("Connecting...", priority=True)
+            self.network_monitor.connect_new(self.data["iface"], self.data["ssid"], password, callback=connect_new_callback)
+                
+
         def primary_action(self, g, *args):
             g.set_state(Gtk.EventSequenceState.CLAIMED)
             if self.state == NetworkState.CONNECTED:
-                self.update_subtitle("Disconnecting...")
-                self.network_monitor.disconnect_wifi(self.data["iface"])
+                def disconnect_callback(state):
+                    self.state_lock(False)
+                    if state is not 0:
+                        self.update_subtitle("Something went wrong :c", True, 5000)
+                
+                self.state_lock(True)
+                self.update_subtitle("Disconnecting...", priority=True)
+                self.network_monitor.disconnect_wifi(self.data["iface"], disconnect_callback)
                 return
             
             if self.state == NetworkState.SAVED:
@@ -509,57 +549,45 @@ class Network(Gtk.Box):
                     return
                 
                 def connect_saved_callback(state):
-                    self.subtitle_lock = False
+                    self.state_lock(False)
                     if state is not 0:
                         self.update_subtitle("Couldn't establish connection :c", True, 5000)
                 
-                self.subtitle_lock = True
+                self.state_lock(True)
                 self.update_subtitle("Connecting...", priority=True)
                 self.network_monitor.connect_saved(self.data["iface"], self.data["uuid"], connect_saved_callback)
                 return
                 
             if self.state == NetworkState.AVIABLE:
-                def connect_new_callback(state):
-                    print(f'what the fuck {state}')
-                    self.subtitle_lock = False
-                    self.password_entry.set_editable(True)
-                    if state == 2:
-                        self.update_subtitle("Password Incorrect!", True, 5000)
-                    elif state is not 0:
-                        self.update_subtitle("Couldn't establish connection :c", True, 5000)
-                protected =  int(self.data["wpa_flags"]) > 0 or int(self.data["rsn_flags"]) > 0
-                
-                password = None
-                
-                if protected:
-                    password = self.password_entry.get_text()
-                    self.password_entry.set_text("")
-                    self.password_entry.set_editable(False)
-                    
-                    
-                self.subtitle_lock = True
-                self.update_subtitle("Connecting...", priority=True)
-                self.network_monitor.connect_new(self.data["iface"], self.data["ssid"], password, callback=connect_new_callback)
-                
+                self.connect_new()
                 return
             
         
         def secondary_action(self, g,*args):
             g.set_state(Gtk.EventSequenceState.CLAIMED)
             if self.state == NetworkState.CONNECTED:
+                
+                def disable_callback(state):
+                    if state is not 0:
+                        self.update_subtitle("Something went wrong :c", True, 5000)
+                
+                self.state_lock(True)
+                
                 if int(self.data["state"]) in [10, 20, 120]:
-                    self.network_monitor.enable_wifi(self.data["iface"], True)
+                    self.update_subtitle("Enabling Card...", priority=True)
+                    self.network_monitor.enable_wifi(self.data["iface"], True, disable_callback)
                 else:
-                    self.network_monitor.enable_wifi(self.data["iface"], False)
+                    self.update_subtitle("Disabling Card...", priority=True)
+                    self.network_monitor.enable_wifi(self.data["iface"], False, disable_callback)
                 return
             
             if self.state == NetworkState.SAVED:
                 def forget_saved_callback(state):
-                    self.subtitle_lock = False
+                    self.state_lock(False)
                     if state is not 0:
                         self.update_subtitle("An error occured :c", True, 5000)
                 
-                self.subtitle_lock = True
+                self.state_lock(True)
                 self.update_subtitle("Forgetting...", priority=True)
                 self.network_monitor.forget_saved(self.data["uuid"], forget_saved_callback)
                                 
@@ -569,6 +597,19 @@ class Network(Gtk.Box):
                 self.update_subtitle("How TF did you click that?", True, 5000)
                 return
 
+        def state_lock(self, state):
+            if state:
+                self.set_can_target(False)
+                self.action_button.set_sensitive(False)
+                self.secondary_button.set_sensitive(False)
+                self.subtitle_lock = True
+                self.add_css_class("busy")
+            else:
+                self.set_can_target(True)
+                self.action_button.set_sensitive(True)
+                self.secondary_button.set_sensitive(True)
+                self.subtitle_lock = False
+                self.remove_css_class("busy")
         def update_subtitle(self, text, error = False, lock_ms = None, priority = False):
             if self.subtitle_lock and not priority:
                 return
